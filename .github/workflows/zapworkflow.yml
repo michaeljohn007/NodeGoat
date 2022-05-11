@@ -1,0 +1,29 @@
+name: Security Checks
+on: [push]
+
+jobs:
+  test:
+    name: OWASP ZAP SCANS
+    runs-on: ubuntu-latest
+
+    steps:
+       - uses: actions/checkout@v2
+         with:
+            ref: master
+       - name: Building Docker Node-Goat Image
+         run: docker-compose build
+       - name: Launching the app
+         run: docker-compose up --detach
+         
+       - name: OWASP ZAP Baseline Scan
+       # You may pin to the exact commit or the version.
+       # uses: zaproxy/action-baseline@df1ee70ea1ebbdaa1b48e6fc861e0dc0a71fedd8
+         uses: zaproxy/action-baseline@v0.6.1
+         with:
+            # GitHub Token to create issues in the repository
+            token: ${{ github.token }}
+            # Target URL
+            target: "http://localhost:4000"
+            fail_action: false
+            issue_title: Security Tests 
+      
